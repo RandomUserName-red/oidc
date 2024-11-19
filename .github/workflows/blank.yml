@@ -1,0 +1,25 @@
+name: List S3
+
+on:
+  push:
+    branches: [ "main" ]
+permissions:
+  contents: read
+
+jobs:
+    read:
+      name: "LS aws s3"
+      runs-on: ubuntu-latest
+      # These permissions are needed to interact with GitHub's OIDC Token endpoint.
+      permissions:
+        id-token: write
+        contents: read
+      steps:
+        - name: Configure AWS credentials from Test account
+          uses: aws-actions/configure-aws-credentials@v4
+          with:
+            role-to-assume: arn:aws:iam::715841334827:role/GA-oidc
+            aws-region: us-east-1
+        - name: Copy files to the test website with the AWS CLI
+          run: |
+            aws s3 cp s3://cidccourse-oidc-s3/flag.txt - | cat
